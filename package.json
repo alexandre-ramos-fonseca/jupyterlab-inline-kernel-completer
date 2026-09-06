@@ -1,0 +1,48 @@
+{
+  "name": "jupyterlab-inline-kernel-completer",
+  "version": "0.1.0",
+  "packageManager": "yarn@4.18.0",
+  "description": "Inline ghost-text kernel completer for JupyterLab (no AI, no history).",
+  "license": "MIT",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "inline-completion"
+  ],
+  "files": [
+    "lib/**/*",
+    "static/**/*"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexandre-ramos-fonseca/jupyterlab-inline-kernel-completer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alexandre-ramos-fonseca/jupyterlab-inline-kernel-completer/issues"
+  },
+  "jupyterlab": {
+    "extension": true
+  },
+  "scripts": {
+    "build": "jlpm build:lib && jlpm build:labextension",
+    "build:lib": "tsc -b",
+    "build:labextension": "jupyter labextension build . --development=True",
+    "typecheck": "tsc -b --pretty false",
+    "clean": "jlpm clean:lib",
+    "clean:lib": "jlpm -y rimraf lib tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "@jupyterlab/application": "~4.5.7",
+    "@jupyterlab/completer": "~4.5.7",
+    "@jupyterlab/coreutils": "~6.5.7",
+    "@jupyterlab/services": "^7.6.3"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "~4.5.7",
+    "rimraf": "6.0.1",
+    "typescript": "5.7.3"
+  }
+}
