@@ -1,52 +1,98 @@
 # JupyterLab Inline Kernel Completer
 
-This JupyterLab 4 extension provides lightweight ghost-text completions from the active Jupyter kernel.
+A lightweight JupyterLab inline-completion provider that displays ghost-text suggestions returned by the active Jupyter kernel.
+
+It uses the standard Jupyter completion protocol only. It does **not** use AI, a remote service, telemetry, or completion history.
 
 ## How it works
 
-As you type, the extension sends the current cell text and cursor position to the active kernel using the Jupyter completion protocol. It displays the suffixes returned by the kernel as inline suggestions. The regular JupyterLab completion popup remains available through its normal shortcut (usually `Ctrl+Space`).
+As you type, the extension sends the current editor text and cursor position to the active kernel using `complete_request`. Matching suffixes returned by the kernel are displayed as inline suggestions.
 
-The extension uses only the active kernel. It does not use AI, a remote service, telemetry, or completion history.
+The regular JupyterLab completion popup remains available through its normal shortcuts.
 
 ## Requirements
 
-- JupyterLab 4.x
-- A running Jupyter kernel that supports the `complete_request` protocol
+- JupyterLab 4.5.x (the current package dependencies target the JupyterLab 4.5 series);
+- a running Jupyter kernel that supports the `complete_request` protocol;
+- Node.js when installing from source.
 
-## Installation
+## Quick start from source
 
-For development from a checkout:
+Until the extension is published to a package registry, install it from a checkout:
 
-```bash
-yarn install
+```sh
+git clone https://github.com/alexandre-ramos-fonseca/jupyterlab-inline-kernel-completer.git
+cd jupyterlab-inline-kernel-completer
+corepack enable
+yarn install --immutable
 yarn build
 jupyter labextension develop . --overwrite
 ```
 
-To use the built extension locally without publishing it:
+Restart JupyterLab, then confirm that the extension is visible:
 
-```bash
-jupyter labextension install .
+```sh
+jupyter labextension list
 ```
 
-The package is also structured as a prebuilt JupyterLab extension and can be installed by a package manager once published. This repository does not publish to npm or PyPI as part of its development workflow.
+## Using the completer
+
+Open a notebook with an active kernel and start typing a symbol that the kernel can complete. When a suggestion is available, JupyterLab displays the remaining text as ghost text.
+
+JupyterLab's default inline-completion shortcuts include:
+
+- `Tab` or `Alt+End` — accept the current suggestion;
+- `Alt+[` / `Alt+]` — cycle through suggestions;
+- `Alt+\` — request an inline suggestion explicitly.
+
+These shortcuts belong to JupyterLab and can be changed in its settings.
 
 ## Configuration
 
-The provider exposes settings through JupyterLab's inline-completion provider configuration: enabled state, timeout, debounce delay, maximum suggestions, minimum prefix length, and whether to fill in the middle of a line. The defaults are conservative: a 2-second kernel timeout, a two-character prefix, and at most five suggestions.
+Open **Settings → Settings Editor → Inline Completer**. The installed provider appears as **Kernel Inline Completer** / **Kernel**.
 
-## Limitations
+The provider exposes:
 
-- Suggestions depend on the active kernel and its language implementation.
-- A kernel that is stopped, unavailable, slow, or does not support completion produces no ghost text.
-- The extension does not generate completions itself and does not retain history.
-- It provides no Python server package; installation requires Node/JupyterLab extension tooling until a distribution package is published.
+- **Enabled** — enable or disable kernel ghost-text suggestions;
+- **Timeout** — maximum wait for a kernel reply, default `2000 ms`;
+- **Debounce delay** — delay before requesting a suggestion, default `120 ms`;
+- **Max suggestions** — maximum candidates returned to the inline completer, default `5`;
+- **Min prefix length** — minimum typed prefix before suggestions are shown, default `2`;
+- **Auto-fill in middle** — allow automatic suggestions when typing in the middle of a line, disabled by default.
+
+JupyterLab also provides global Inline Completer settings for ghost-text appearance, suggestion widgets, shortcuts, and related behavior.
+
+## Troubleshooting
+
+If no ghost text appears:
+
+1. confirm that the notebook has a running kernel;
+2. check **Settings → Settings Editor → Inline Completer** and ensure the Kernel provider is enabled;
+3. try `Alt+\` to request a suggestion explicitly;
+4. verify that the kernel itself offers completions, for example with the regular JupyterLab completer;
+5. check `jupyter labextension list` to confirm that the extension is loaded.
+
+A kernel that is stopped, slow, unavailable, or does not implement useful completions will produce no ghost text.
 
 ## Development
 
-```bash
+```sh
+corepack enable
+yarn install --immutable
 yarn typecheck
 yarn build
 ```
 
-The project is released under the MIT License.
+The project is a JavaScript-only JupyterLab extension and is not currently published to npm or PyPI.
+
+## Privacy and limitations
+
+- Suggestions come exclusively from the active kernel.
+- The extension does not generate completions itself.
+- It does not retain completion history.
+- It does not send code to an external service.
+- Completion quality depends entirely on the active kernel and language implementation.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
